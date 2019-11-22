@@ -29,7 +29,14 @@ helm install spinnaker stable/spinnaker \
   --namespace spinnaker \
   --values spinnaker-values.yaml
 
+echo "Installing Prometheus Operator with helm..."
+helm install prometheus-operator stable/prometheus-operator \
+  --namespace monitoring \
+  --values prometheus-operator-values.yaml
 
+#########
+# ISTIO
+#########
 echo "Installing Istio-init with helm..."
 curl -L https://git.io/getLatestIstio | sh -
 cd istio-1.4.0
@@ -51,12 +58,13 @@ kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
 
 cd ..
 
-echo "Installing Istio Telemetry's Prometheus Operator..."
+#######################
+# Prometheus Operator
+#######################
+echo "Installing Istio Telemetry's Prometheus Operator service monitor..."
 curl -sL -o istio-installer.zip https://github.com/istio/installer/archive/master.zip
 unzip -oqq istio-installer.zip
-helm install prometheus-operator \
+helm install istio-prometheus-operator \
 	./installer-master/istio-telemetry/prometheus-operator \
-	--namespace monitoring --set global.telemetryNamespace=istio-system
-
-echo "Installing Spinnaker's Prometheus Operator service monitor..."
-kubectl apply -n monitoring -f spinnaker-service-monitor.yaml
+	--namespace monitoring --set global.telemetryNamespace=istio-system \
+  --set prometheusOperator.createPrometheusResource=false
