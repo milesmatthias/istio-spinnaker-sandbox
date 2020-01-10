@@ -48,7 +48,7 @@ kubectl -n istio-system wait --for=condition=complete job --all
 
 echo "Installing Istio with helm..."
 helm install istio install/kubernetes/helm/istio --namespace istio-system \
-	--values ../istio-values.yaml
+  --values ../istio-values.yaml
 
 echo "waiting a minute before installing sample application..."
 sleep 60
@@ -67,6 +67,6 @@ echo "Installing Istio Telemetry's Prometheus Operator service monitor..."
 curl -sL -o istio-installer.zip https://github.com/istio/installer/archive/master.zip
 unzip -oqq istio-installer.zip
 helm install istio-prometheus-operator \
-	./installer-master/istio-telemetry/prometheus-operator \
-	--namespace monitoring --set global.telemetryNamespace=istio-system \
+  ./installer-master/istio-telemetry/prometheus-operator \
+  --namespace monitoring --set global.telemetryNamespace=istio-system \
   --set prometheusOperator.createPrometheusResource=false
