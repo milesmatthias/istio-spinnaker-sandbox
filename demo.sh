@@ -5,17 +5,18 @@
 #####################
 
 PROJECT=$(gcloud config get-value core/project)
-ZONE=$(gcloud config get-value compute/zone)
-CLUSTER_NAME=sandbox-cluster
+#REGION=$(gcloud config get-value compute/region)
+REGION=us-west1
+CLUSTER_NAME=regional-sandbox-cluster
 
 echo "Creating a cluster called ${CLUSTER_NAME}..."
 gcloud container clusters create $CLUSTER_NAME \
-  --enable-ip-alias --zone $ZONE --project $PROJECT \
-  --machine-type=n1-standard-4
+  --enable-ip-alias --region $REGION --project $PROJECT \
+  --machine-type=n1-standard-4 --num-nodes=6
 
 echo "Getting kubectl creds for your cluster..."
 gcloud container clusters get-credentials $CLUSTER_NAME \
-  --zone $ZONE --project $PROJEC
+  --region $REGION --project $PROJECT
 kubectl create namespace spinnaker
 kubectl create namespace monitoring
 kubectl create namespace istio-system
@@ -39,21 +40,22 @@ helm install prometheus-operator stable/prometheus-operator \
 #########
 echo "Installing Istio-init with helm..."
 curl -L https://git.io/getLatestIstio | sh -
-cd istio-1.4.0
+cd istio-1.4.2
 helm install istio-init install/kubernetes/helm/istio-init --namespace istio-system
 
 echo "Waiting for istio jobs to complete..."
 kubectl -n istio-system wait --for=condition=complete job --all
 
 echo "Installing Istio with helm..."
-helm install istio install/kubernetes/helm/istio --namespace istio-system
+helm install istio install/kubernetes/helm/istio --namespace istio-system \
+	--values ../istio-values.yaml
 
 echo "waiting a minute before installing sample application..."
 sleep 60
 
-echo "installing sample application BookInfo..."
-kubectl label namespace default istio-injection=enabled
-kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
+# echo "installing sample application BookInfo..."
+# kubectl label namespace default istio-injection=enabled
+# kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
 
 
 cd ..

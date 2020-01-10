@@ -2,6 +2,23 @@ prometheus:
   service:
     type: NodePort
   additionalServiceMonitors:
+  - name: grpc-client-all-metrics
+    labels:
+      app: grpc-client
+      # this label is here to match the prometheus operator serviceMonitorSelector attribute
+      # prometheus.prometheusSpec.serviceMonitorSelector
+      # https://github.com/helm/charts/tree/master/stable/prometheus-operator
+      release: prometheus-operator
+    selector:
+      matchLabels:
+        app: grpc-client
+      namespaceSelector:
+        any: true
+    endpoints:
+    # "port" is string only. "targetPort" is integer or string.
+    - targetPort: 1234
+      interval: 10s
+      path: "/"
   - name: spinnaker-all-metrics
     labels:
       app: spin

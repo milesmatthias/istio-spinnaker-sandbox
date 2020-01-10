@@ -1,0 +1,22 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-operator-prometheus
+    chart: prometheus-operator-8.2.2
+    heritage: Helm
+    release: prometheus-operator
+  name: third-test-grpc-client
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 10s
+    path: /
+    targetPort: 1234
+    port: mtrx-http
+  selector:
+    matchLabels:
+      app: grpc-client
+    namespaceSelector:
+      matchNames:
+      - grpc-client
