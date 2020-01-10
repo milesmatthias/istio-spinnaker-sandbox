@@ -48,7 +48,7 @@ kubectl -n istio-system wait --for=condition=complete job --all
 
 echo "Installing Istio with helm..."
 helm install istio install/kubernetes/helm/istio --namespace istio-system \
-  --values ../istio-values.yaml
+  --values ../values-istio.yaml
 
 echo "waiting a minute before installing sample application..."
 sleep 60

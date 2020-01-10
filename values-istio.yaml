@@ -1,0 +1,18 @@
+global:
+  proxy:
+    accessLogFile: "/dev/stdout"
+  localityLbSetting:
+    enabled: true
+#    distribute:
+#      - from: us-west1/us-west1-a/*"
+#        to:
+#          "us-west1/us-west1-c/*": 100
+
+# global:
+#   localityLbSetting:
+#     enabled: true
+#     distribute:
+#     - from: "us-central1/*"
+#       to:
+#         "us-central1/*": 80
+#         "us-central2/*": 20
